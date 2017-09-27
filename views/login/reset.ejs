@@ -1,0 +1,14 @@
+<% include ../partials/header %>
+  <div class="jumbotron jumbotronWithForm">
+    <h2>Password Reset<h2>
+    <form action="/reset/<%=token%>" method="post" id="resetForm">
+      <div class="form-group">
+        <input id="password" type="password" name="password" placeholder="Password *" class="form-control" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required=true>
+        <small id="passwordCond" class="form-text text-muted inactive">Password must be at least 8 character and contain min MAJ and number</small><br>
+      </div>
+      <input type='submit' class="btn btn-default btn-primary" value="Submit">
+      <a class="btn btn-default btn-warning" href="/login">Log In</a>
+    </form>
+  </div>
+<script src="/js/form.js"></script>
+<% include ../partials/footer %>

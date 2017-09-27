@@ -1,0 +1,66 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  padding-top: 150px;
+  margin-bottom: 95px;
+}
+
+.container-fluid {
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 950px; /* or 950px */
+}
+
+.navbar-header {
+    padding: 15px;
+    text-align: center;
+    width: 100%;
+}
+
+.navbar-default .navbar-brand {
+  float:none;
+}
+
+#profilePic {
+  width: 25px;
+  height: 25px;
+  border-radius: 25px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+.jumbotronWithForm {
+  text-align: center;
+}
+
+.thumbnail {
+    margin-left: 3%;
+}
+
+.thumbnail p, .thumbnail h3 {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.seen {
+    border: 1px solid tomato;
+}
+
+.inactive {
+  display: none;
+}
+
+.active {
+  display: block;
+}

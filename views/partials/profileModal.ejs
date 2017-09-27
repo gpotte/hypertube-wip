@@ -1,0 +1,36 @@
+<!-- MODAL OVERLAY-->
+  <div class="modal fade" id="editModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Edit Profile</h4>
+        </div>
+        <div class="modal-body">
+          <form id="editForm" action="/user/edit" method="post">
+          <label>Login</label>
+          <input type=text value="<%=profile.login%>" name="login" class="form-control" required>
+          <label>FirstName</label>
+          <input type=text value="<%=profile.firstName%>" name="firstName" class="form-control" required>
+          <label>Name</label>
+          <input type=text value="<%=profile.name%>" name="name" class="form-control" required>
+          <label>E-mail</label>
+          <input type=text value="<%=profile.email%>" name="email" class="form-control" required><br>
+          <select name="language" required>
+            <%if (profile.language === "english"){%>
+              <option value="english">English</option><option value="francais">Francais</option>
+            <%} else {%>
+              <option value="francais">Francais</option><option value="english">English</option>
+            <%}%>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input type="submit" class="btn btn-primary"></button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- MODAL OVERLAY-->

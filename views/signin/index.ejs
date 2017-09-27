@@ -1,0 +1,29 @@
+<% include ../partials/header %>
+
+<div class="container">
+  <% if (message.length > 0) { %>
+      <div class="alert alert-danger"><%= message %></div>
+  <% } %>
+  <div class="jumbotron jumbotronWithForm" >
+    <h2>Create a new account</h2>
+    <form action="/signin" method="POST" id="signInForm">
+      <div class="form-group">
+        <input id="username" type="text" name="username" placeholder="Username *" class="form-control" pattern=".{5,}" required=true>
+        <small id="usernameCond" class="form-text text-muted inactive">login must be at least 5 character</small>
+        <input type="email" name="mail" placeholder="Mail *" class="form-control" required=true>
+        <input type="text" name="name" placeholder="Name *" class="form-control" required=true>
+        <input type="text" name="firstname" placeholder="Firstname *" class="form-control" required=true>
+        <input id="password" type="password" name="password" placeholder="Password *" class="form-control" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required=true>
+        <small id="passwordCond" class="form-text text-muted inactive">Password must be at least 8 character and contain min MAJ and number</small><br>
+        <select name="language" required>
+          <option value="english">english</option>
+          <option value="french">francais</option>
+        </select>
+      </div>
+      <input type='submit' class="btn btn-default btn-primary" value="Sign In">
+      <a class="btn btn-default btn-warning" href="/login">already got an account</a>
+    </form>
+  </div>
+</div>
+<script src="/js/form.js"></script>
+<% include ../partials/footer %>
