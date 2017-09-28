@@ -1,7 +1,7 @@
 router.get('/movie/:title/:hash', middleware.loggedIn(), (req, res)=>{
   var room = req.params.title + encodeURI(Math.trunc(Math.random() * 10000000)),
   magnet = 'magnet:?xt=urn:btih:'+req.params.hash+'&dn='+ encodeURI(req.params.title)+'&tr=udp://glotorrents.pw:6969/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://torrent.gresille.org:80/announce&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://p4p.arenabg.ch:1337&tr=udp://tracker.internetwarriors.net:1337';
-  var engine = torrentStream(magnet, {path: '/tmp/test'});
+  var engine = torrentStream(magnet, {path: '/tmp/hypertube-files'});
   engine.on('ready', ()=>{
     const max = engine.files.reduce((prev, current)=>{
       return (prev.length > current.length) ? prev : current;
@@ -10,8 +10,8 @@ router.get('/movie/:title/:hash', middleware.loggedIn(), (req, res)=>{
       if (file !== max)
       {
         file.deselect();
-        fs.unlink('/tmp/test/'+file.path, ()=>{
-          console.log('removing '.red, file.path)
+        fs.unlink('/tmp/hypertube-files/'+file.path, ()=>{
+          console.log('Removing '.red, file.path)
         });
       }
       else {
@@ -24,7 +24,7 @@ router.get('/movie/:title/:hash', middleware.loggedIn(), (req, res)=>{
 });
 
 router.get('/video', (req, res)=>{
-  let file = '/tmp/test/' + decodeURI(req.query.path);
+  let file = '/tmp/hypertube-files/' + decodeURI(req.query.path);
   fs.stat(file, function(err, stats) {
 
   		//
