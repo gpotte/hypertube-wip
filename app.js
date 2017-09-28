@@ -57,5 +57,5 @@ app.get('*', (req, res)=>{
 
 http.listen(port, ()=>{
   console.log("----------------------------------------------------")
-  console.log("server running on port %d".bgGreen.black, port);
+  console.log("Welcome to Hypertube ! Server running on port %d".bgGreen.black, port);
 });

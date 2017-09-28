@@ -33,7 +33,7 @@ router.get('/movie/:title/:hash', middleware.loggedIn(), (req, res)=>{
 });
 
 router.get('/video', (req, res)=>{
-  let file = '/tmp/test/' + decodeURI(req.query.path);
+  let file = '/tmp/hypertube-files/' + decodeURI(req.query.path);
   fs.stat(file, function(err, stats) {
   		if(err)
   		{
