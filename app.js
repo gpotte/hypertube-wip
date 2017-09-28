@@ -11,6 +11,8 @@ passport        = require('passport'),
 flash           = require('connect-flash'),
 session         = require('express-session'),
 port            = process.env.PORT || 3030,
+http            = require('http').Server(app),
+io              = require('socket.io')(http),
 router          = express.Router(),
 fs              = require('fs'),
 request         = require('request'),
@@ -38,13 +40,13 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 /////////////////SETUP ENV, DB AND PASSPORT//////////////
 
 app.get('/', middleware.loggedIn(), (req, res)=>{
-  res.render('index', {title: 'home'});
+  res.render('index', {title: 'home', user: req.user});
 });
 
 app.get('/movie/:title/:hash', (req, res)=>{
-  var room = req.params.title + encodeURI(Math.trunc(Math.random() * 10000)),
-  magnet = 'magnet:?xt=urn:btih:'+req.params.hash+'&dn='+ encodeURI(req.params.title)+'&tr=udp://glotorrents.pw:6969/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://torrent.gresille.org:80/announce&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://p4p.arenabg.ch:1337&tr=udp://tracker.internetwarriors.net:1337'
-  res.render('movie/download', {title: req.params.title});
+  var room = req.params.title + encodeURI(Math.trunc(Math.random() * 10000000)),
+  magnet = 'magnet:?xt=urn:btih:'+req.params.hash+'&dn='+ encodeURI(req.params.title)+'&tr=udp://glotorrents.pw:6969/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://torrent.gresille.org:80/announce&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://p4p.arenabg.ch:1337&tr=udp://tracker.internetwarriors.net:1337';
+  res.render('movie/download', {title: req.params.title, room: room, user: req.user});
   var engine = torrentStream(magnet, {path: '/tmp/test'});
   engine.on('ready', ()=>{
     const max = engine.files.reduce((prev, current)=>{
@@ -67,13 +69,16 @@ app.get('/movie/:title/:hash', (req, res)=>{
 });
 
 function percent(engine, file, res, room){
-  if (((engine.swarm.downloaded / file.length) * 100) < 100) {
-    console.log(((engine.swarm.downloaded / file.length) * 100).toFixed(2) + '%');
-    setTimeout(function(){percent(engine, file, res)}, 5000);
-  } else {
-    console.log("DOWNLOAD IS OVER FOR : " + file.name);
-  }
+  io.sockets.in(room).emit('progress', {value: Math.round((engine.swarm.downloaded / file.length) * 100)});
+  setTimeout(function(){percent(engine, file, res, room)}, 5000);
 };
+
+io.on('connection', (socket)=>{
+  socket.on('subscribe', (data)=>{
+    socket.pseudo = data.user;
+    socket.join(data.room);
+  });
+});
 
 var loginRoute = require(process.env.PWD + '/routes/login'),
     userRoute  = require(process.env.PWD + '/routes/user');
@@ -85,7 +90,7 @@ app.get('*', (req, res)=>{
   res.render('404', {title: '404'});
 });
 
-app.listen(port, ()=>{
+http.listen(port, ()=>{
   console.log("----------------------------------------------------")
   console.log("server running on port %d".bgGreen.black, port);
 });

@@ -1,6 +1,5 @@
 <%include ../partials/header%>
 <link rel="stylesheet" type="text/css" href="/css/movie.css" />
-<script src="/js/download.js"></script>
 <h1>Downloading <%=title%></h1>
 <div class="progress">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
@@ -8,4 +7,10 @@
    0%
   </div>
 </div>
+<script src="https://cdn.socket.io/socket.io-1.4.0.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script> var room = '<%=room%>',
+             user =  '<%=user.login%>';
+</script>
+<script src="/js/download.js"></script>
 <%include ../partials/footer%>
