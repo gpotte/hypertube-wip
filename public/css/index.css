@@ -7,7 +7,10 @@ body {
   padding-top: 150px;
   margin-bottom: 95px;
 }
-
+#btn-genre
+{
+  margin: 1vmin;
+}
 .container-fluid {
   margin-right: auto;
   margin-left: auto;

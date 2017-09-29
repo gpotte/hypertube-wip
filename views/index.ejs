@@ -1,12 +1,25 @@
 <% include partials/header %>
-<div class="container movie-list row">
+<div class="container">
   <div class="input-group">
-    <input type="text" class="form-control">
+    <input type="text" class="form-control" name="query" id="query">
     <span class="input-group-btn">
-      <button class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
+      <button class="btn btn-default" type="button" onclick="getMovies_advanced('all', document.getElementById('query').value)"><i class="fa fa-search"></i></button>
     </span>
   </div>
-  <br>
+  <div class="input-group">
+    <span class="input-group-btn">
+      <center>
+      <button id="btn-genre" class="btn btn-default" type="button" onclick="getMovies_genre('comedy');">Comedy</button>
+      <button id="btn-genre" class="btn btn-default" type="button" onclick="getMovies_genre('action');">Action</button>
+      <button id="btn-genre" class="btn btn-default" type="button" onclick="getMovies_genre('drama');">Drama</button>
+      <button id="btn-genre" class="btn btn-default" type="button" onclick="getMovies_genre('animation');">Animation</button>
+      <button id="btn-genre" class="btn btn-default" type="button" onclick="getMovies_genre('thriller');">Thriller</button>
+      <button id="btn-genre" class="btn btn-default" type="button" onclick="getMovies_genre('fantasy');">Fantasy</button>
+      </center>
+    </span>
+  </div>
+</div>
+<div class="container movie-list row">
 </div>
 <script src="/js/suggestion.js"></script>
 <% include partials/footer %>
