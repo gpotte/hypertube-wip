@@ -17,9 +17,9 @@ function getMovies(){
                                   <div class="caption">\
                                     <h3>'+movie.title+'</h3>\
                                     <small>'+movie.summary.substring(0, 100)+'</small><br>\
-                                    <button class="btn btn-default">'+movie.rating+'/10</button>\
-                                    <a href="http://localhost:3030/movie/'+movie.id+'/sd" class="btn btn-success">Watch</a>\
-                                    <a href="http://localhost:3030/movie/'+movie.id+'/hd" class="btn btn-success">Watch HD</a>\
+                                    <button class="btn btn-default">'+movie.rating+'/10</button><br /><br />\
+                                    <a href="http://localhost:3030/movie/'+movie.id+'/sd" class="btn btn-success"><i class="fa fa-play-circle" aria-hidden="true"></i> Watch</a>\
+                                    <a href="http://localhost:3030/movie/'+movie.id+'/hd" class="btn btn-success"><i class="fa fa-youtube-play" aria-hidden="true"></i> Watch HD</a>\
                                   </div>\
                                 </div>')
       } else {
@@ -29,7 +29,7 @@ function getMovies(){
                                       <h3>'+movie.title+'</h3>\
                                       <small>'+movie.summary.substring(0, 100)+'</small><br>\
                                       <button class="btn btn-default">'+movie.rating+'/10</button>\
-                                      <a href="http://localhost:3030/movie/'+movie.id+'/sd" class="btn btn-success">Watch</a>\
+                                      <a href="http://localhost:3030/movie/'+movie.id+'/sd" class="btn btn-success"><i class="fa fa-play-circle" aria-hidden="true"></i> Watch</a>\
                                     </div>\
                                   </div>')
       }
@@ -38,13 +38,3 @@ function getMovies(){
   // });
   page++;
 };
-
-$(document).ready(()=>{
-  getMovies()
-});
-
-$(window).scroll(()=>{
-  if ($(window).scrollTop() >= $(document).height() - $(window).height() - 10) {
-      getMovies();
-   }
-});
