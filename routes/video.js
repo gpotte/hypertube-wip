@@ -14,22 +14,25 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
                                         "udp://p4p.arenabg.ch:1337",
                                         "udp://tracker.internetwarriors.net:1337"
     ]});
-
-    engine.on('ready', ()=>{
-      const max = engine.files.reduce((prev, current)=>{
-        return (prev.length > current.length) ? prev : current;
-      });
-      engine.files.forEach((file)=>{
-        if (file !== max)
-        {
-          file.deselect();
-          fs.unlink('/tmp/hypertube-files/'+file.path, ()=>{});
-        }
-        else {
-          var stream  = file.createReadStream();
-            res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body});
-          setTimeout(function(){percent(engine, file, res, room)}, 2000);
-        }
+    info_imdb = request('http://www.theimdbapi.org/api/movie?movie_id='+ body.data.movie.imdb_code, (err, response)=>{
+    response.body = JSON.parse(response.body);
+      // console.log(response.body.stars);
+      engine.on('ready', ()=>{
+        const max = engine.files.reduce((prev, current)=>{
+          return (prev.length > current.length) ? prev : current;
+        });
+        engine.files.forEach((file)=>{
+          if (file !== max)
+          {
+            file.deselect();
+            fs.unlink('/tmp/hypertube-files/'+file.path, ()=>{});
+          }
+          else {
+            var stream  = file.createReadStream();
+              res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body, stars: response.body.stars});
+            setTimeout(function(){percent(engine, file, res, room)}, 2000);
+          }
+        });
       });
     });
   });
