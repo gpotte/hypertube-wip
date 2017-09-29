@@ -1,36 +1,36 @@
-router.get('/movie/:title/:hash/:id', middleware.loggedIn(), (req, res)=>{
-  var room = req.params.title + encodeURI(Math.trunc(Math.random() * 10000000)),
-  magnet = 'magnet:?xt=urn:btih:'+req.params.hash+'&dn='+ encodeURI(req.params.title);
-  var engine = torrentStream(magnet, {path: '/tmp/hypertube-files', trackers: ["udp://glotorrents.pw:6969/announce",
-                                      "udp://tracker.opentrackr.org:1337/announce",
-                                      "udp://torrent.gresille.org:80/announce",
-                                      "udp://tracker.openbittorrent.com:80",
-                                      "udp://tracker.coppersurfer.tk:6969",
-                                      "udp://tracker.leechers-paradise.org:6969",
-                                      "udp://p4p.arenabg.ch:1337",
-                                      "udp://tracker.internetwarriors.net:1337"
-  ]});
+router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
+  var room = req.params.id + encodeURI(Math.trunc(Math.random() * 10000000)),
+  qual  = req.params.qual,
+  info  = request('https://yts.ag/api/v2/movie_details.json?movie_id='+req.params.id, function(err, response, body){
+    body = JSON.parse(body);
+    var hash = qual === "sd" ? body.data.movie.torrents[0].hash : body.data.movie.torrents[1].hash;
+    magnet = 'magnet:?xt=urn:btih:'+ hash +'&dn='+ encodeURI(body.data.movie.title);
+    var engine = torrentStream(magnet, {path: '/tmp/hypertube-files', trackers: ["udp://glotorrents.pw:6969/announce",
+                                        "udp://tracker.opentrackr.org:1337/announce",
+                                        "udp://torrent.gresille.org:80/announce",
+                                        "udp://tracker.openbittorrent.com:80",
+                                        "udp://tracker.coppersurfer.tk:6969",
+                                        "udp://tracker.leechers-paradise.org:6969",
+                                        "udp://p4p.arenabg.ch:1337",
+                                        "udp://tracker.internetwarriors.net:1337"
+    ]});
 
-  engine.on('ready', ()=>{
-    const max = engine.files.reduce((prev, current)=>{
-      return (prev.length > current.length) ? prev : current;
-    });
-    engine.files.forEach((file)=>{
-      if (file !== max)
-      {
-        file.deselect();
-          fs.unlink('/tmp/hypertube-files/'+file.path, ()=>{
-            console.log('removing '.red, file.path)
-        });
-      }
-      else {
-        var stream  = file.createReadStream();
-        var infos = request('https://yts.ag/api/v2/movie_details.json?movie_id='+req.params.id, (err, response, body)=>{
-          console.log(body);
-          res.render('movie/download', {title: req.params.title, room: room, user: req.user, path: encodeURI(file.path), info: JSON.parse(body)});
-        });
-        setTimeout(function(){percent(engine, file, res, room)}, 2000);
-      }
+    engine.on('ready', ()=>{
+      const max = engine.files.reduce((prev, current)=>{
+        return (prev.length > current.length) ? prev : current;
+      });
+      engine.files.forEach((file)=>{
+        if (file !== max)
+        {
+          file.deselect();
+          fs.unlink('/tmp/hypertube-files/'+file.path, ()=>{});
+        }
+        else {
+          var stream  = file.createReadStream();
+            res.render('movie/download', {title: req.params.title, room: room, user: req.user, path: encodeURI(file.path), info: body});
+          setTimeout(function(){percent(engine, file, res, room)}, 2000);
+        }
+      });
     });
   });
 });
