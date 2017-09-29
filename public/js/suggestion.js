@@ -11,8 +11,8 @@ function getMovies(){
                                     <h3>'+movie.title+'</h3>\
                                     <small>'+movie.summary.substring(0, 100)+'</small><br>\
                                     <button class="btn btn-default">'+movie.rating+'/10</button>\
-                                    <a href="http://localhost:3030/movie/'+encodeURI(movie.title)+'/'+movie.torrents[0].hash+'/'+movie.id+'" class="btn btn-success">Watch</a>\
-                                    <a href="http://localhost:3030/movie/'+encodeURI(movie.title)+'/'+movie.torrents[1].hash+'/'+movie.id+'" class="btn btn-success">Watch HD</a>\
+                                    <a href="http://localhost:3030/movie/'+movie.id+'/sd" class="btn btn-success">Watch</a>\
+                                    <a href="http://localhost:3030/movie/'+movie.id+'/hd" class="btn btn-success">Watch HD</a>\
                                   </div>\
                                 </div>')
       } else {
@@ -22,7 +22,7 @@ function getMovies(){
                                       <h3>'+movie.title+'</h3>\
                                       <small>'+movie.summary.substring(0, 100)+'</small><br>\
                                       <button class="btn btn-default">'+movie.rating+'/10</button>\
-                                      <a href="http://localhost:3030/movie/'+encodeURI(movie.title)+'/'+movie.torrents[0].hash+'" class="btn btn-success">Watch</a>\
+                                      <a href="http://localhost:3030/movie/'+movie.id+'/sd" class="btn btn-success">Watch</a>\
                                     </div>\
                                   </div>')
       }
