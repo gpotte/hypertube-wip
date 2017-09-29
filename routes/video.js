@@ -27,7 +27,7 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
         }
         else {
           var stream  = file.createReadStream();
-            res.render('movie/download', {title: req.params.title, room: room, user: req.user, path: encodeURI(file.path), info: body});
+            res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body});
           setTimeout(function(){percent(engine, file, res, room)}, 2000);
         }
       });
