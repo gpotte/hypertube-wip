@@ -1,4 +1,4 @@
-router.get('/movie/:title/:hash', middleware.loggedIn(), (req, res)=>{
+router.get('/movie/:title/:hash/:id', middleware.loggedIn(), (req, res)=>{
   var room = req.params.title + encodeURI(Math.trunc(Math.random() * 10000000)),
   magnet = 'magnet:?xt=urn:btih:'+req.params.hash+'&dn='+ encodeURI(req.params.title);
   var engine = torrentStream(magnet, {path: '/tmp/hypertube-files', trackers: ["udp://glotorrents.pw:6969/announce",
@@ -25,7 +25,10 @@ router.get('/movie/:title/:hash', middleware.loggedIn(), (req, res)=>{
       }
       else {
         var stream  = file.createReadStream();
-        res.render('movie/download', {title: req.params.title, room: room, user: req.user, path: encodeURI(file.path)});
+        var infos = request('https://yts.ag/api/v2/movie_details.json?movie_id='+req.params.id, (err, response, body)=>{
+          console.log(body);
+          res.render('movie/download', {title: req.params.title, room: room, user: req.user, path: encodeURI(file.path), info: JSON.parse(body)});
+        });
         setTimeout(function(){percent(engine, file, res, room)}, 2000);
       }
     });
