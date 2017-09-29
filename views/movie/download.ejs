@@ -1,13 +1,18 @@
 <%include ../partials/header%>
-<link rel="stylesheet" type="text/css" href="/css/movie.css" />
-<h1>Downloading <%=title%></h1>
-<video id="video" src="http://localhost:3030/video?path=<%=path%>" controls>
-</video>
+<link rel="stylesheet" type="text/css" href="/css/movie.css"/>
+<video id="video" src="http://localhost:3030/video?path=<%=path%>" controls></video>
 <div class="progress">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
    0%
   </div>
+</div>
+<div class="jumbotron">
+  <h2><%=title%> (<%=info.data.movie.year%>)</h2>
+  <img src="<%=info.data.movie.medium_cover_image%>"></img>
+  <h4><%=info.data.movie.description_intro%></h4>
+  <h5><%=info.data.movie.runtime%> min</h5>
+  <h5><%=info.data.movie.rating%>/10</h5>
 </div>
 <script src="https://cdn.socket.io/socket.io-1.4.0.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
