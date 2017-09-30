@@ -32,7 +32,6 @@ passport.use(new GitHubStrategy({
         var newUser = fillGithubUser(accessToken, profile);
         try {
           newUser.save((err)=>{
-            console.log(newUser);
             middleware.handleError(err);
             return cb(null, newUser);
           });
@@ -199,7 +198,6 @@ function fillIntraUser(token, profile){
 }
 
 function fillGithubUser(token, profile){
-  console.log(profile._json)
   var newUser = new User();
 
   newUser.login       = profile.username;
