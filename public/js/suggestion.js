@@ -9,8 +9,7 @@ function getMovies(){
       // $.getJSON('http://www.theimdbapi.org/api/movie?movie_id='+ movie.imdb_code, (imdb)=>{
       // console.log(imdb.stars);
       // imdb.forEach((cast)=>{
-                                    //  <div> casting: '+imdb.stars+'</div><br>\
-
+      //  <div> casting: '+imdb.stars+'</div><br>\
       if (movie.torrents[1]){
       $('.movie-list').append('<div class="row-eq-height col-xs-5 col-md-3 thumbnail">\
                                   <img src="'+movie.large_cover_image+'">\
@@ -38,3 +37,13 @@ function getMovies(){
   // });
   page++;
 };
+
+$(document).ready(()=>{
+  getMovies()
+});
+      
+$(window).scroll(()=>{
+  if ($(window).scrollTop() >= $(document).height() - $(window).height() - 10) {
+      getMovies();
+   }
+});
