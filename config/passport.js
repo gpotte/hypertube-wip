@@ -27,10 +27,9 @@ passport.use(new GitHubStrategy({
     User.findOne({ githubId: profile.id }, function (err, user) {
 
      if (user)
-        return done(null, user);
+        return cb(null, user);
       else {
         var newUser = fillGithubUser(accessToken, profile);
-
         try {
           newUser.save((err)=>{
             console.log(newUser);
