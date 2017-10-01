@@ -1,3 +1,12 @@
+////////////////// SUBTITLES CONNEXION //////////////////////
+let OS = require('opensubtitles-api');
+let OpenSubtitles = new OS({
+    useragent:'OSTestUserAgentTemp',
+    username: 'scredi',
+    password: 'chatel86',
+    ssl: false
+});
+///////////////////////////////////////////////////////////////
 router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
   var room = req.params.id + encodeURI(Math.trunc(Math.random() * 10000000)),
   qual  = req.params.qual,
@@ -14,10 +23,39 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
                                         "udp://p4p.arenabg.ch:1337",
                                         "udp://tracker.internetwarriors.net:1337"
     ]});
-    info_imdb = request('http://www.theimdbapi.org/api/movie?movie_id='+ body.data.movie.imdb_code, (err, response)=>{
-    response.body = JSON.parse(response.body);
-      // console.log(response.body.stars);
-      engine.on('ready', ()=>{
+
+  //////////////////////////// SUBTITLES //////////////////////////////////////////////
+  OpenSubtitles.login()
+    .then(res => {
+        console.log(res.token);
+        console.log(res.userinfo);
+    })
+    .catch(err => {
+        console.log(err);
+    });
+
+    var lang = ['fre', 'eng'];
+    OpenSubtitles.search({
+        sublanguageid: lang.join(),       // Can be an array.join, 'all', or be omitted.
+        hash: hash,   // Size + 64bit checksum of the first and last 64k
+        // filesize: '129994823',      // Total size, in bytes.
+        // path: 'foo/bar.mp4',        // Complete path to the video file, it allows
+                                      //   to automatically calculate 'hash'.
+        // filename: 'bar.mp4',        // The video file name. Better if extension is included.
+        // season: '2',
+        // episode: '3',
+        langcode: 'fr',
+        extensions: ['srt', 'vtt'], // Accepted extensions, defaults to 'srt'.
+        limit: 'best',                 // Can be 'best', 'all' or an
+                                    // arbitrary nb. Defaults to 'best'
+        imdbid: body.data.movie.imdb_code // 'tt528809' is fine too.
+        // fps: '23.96',               // Number of frames per sec in the video.
+        // query: 'Charlie Chaplin',   // Text-based query, this is not recommended.
+        // gzip: true                  // returns url to gzipped subtitles, defaults to false
+    }).then(function(result){
+        console.log(result)
+      });
+        engine.on('ready', ()=>{
         const max = engine.files.reduce((prev, current)=>{
           return (prev.length > current.length) ? prev : current;
         });
@@ -29,14 +67,20 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
           }
           else {
             var stream  = file.createReadStream();
-              res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body, stars: response.body.stars});
+            request('http://www.theimdbapi.org/api/movie?movie_id='+ body.data.movie.imdb_code, (err2, response2, content)=>{
+              content = JSON.parse(content);
+              // console.log(content)
+              res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body, stars: content.stars});
             setTimeout(function(){percent(engine, file, res, room)}, 2000);
+            });
           }
-        });
       });
     });
   });
 });
+
+
+
 
 router.get('/video', (req, res)=>{
   let file = '/tmp/hypertube-files/' + decodeURI(req.query.path);

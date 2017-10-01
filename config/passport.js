@@ -2,6 +2,7 @@ var LocalStrategy     = require('passport-local').Strategy,
     FacebookStrategy  = require('passport-facebook').Strategy,
     FortyTwoStrategy  = require('passport-42').Strategy,
     configAuth        = require('./auth');
+    GitHubStrategy = require('passport-github').Strategy;
 
 module.exports      = function(passport){
 
@@ -14,6 +15,34 @@ module.exports      = function(passport){
       done(err, user);
     });
   });
+
+/////////////////////////////////// GITHUB OAUTH //////////////////////////////////
+
+passport.use(new GitHubStrategy({
+    clientID: configAuth.githubAuth.clientID,
+    clientSecret: configAuth.githubAuth.clientSecret,
+    callbackURL: configAuth.githubAuth.callbackURL
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    User.findOne({ githubId: profile.id }, function (err, user) {
+
+     if (user)
+        return cb(null, user);
+      else {
+        var newUser = fillGithubUser(accessToken, profile);
+        try {
+          newUser.save((err)=>{
+            middleware.handleError(err);
+            return cb(null, newUser);
+          });
+        } catch (e) {
+            console.error(e);
+        }
+      }
+    });
+  }
+));
+
 
 ////////////////////////////////////LOCAL SIGNIN/////////////////////////////////
   passport.use('local-signin', new LocalStrategy({
@@ -164,6 +193,19 @@ function fillIntraUser(token, profile){
   newUser.name        = profile.name.familyName;
   newUser.firstName   = profile.name.givenName;
   newUser.email       = profile.emails[0].value;
+  newUser.photo       = profile.photos[0].value;
+  return newUser;
+}
+
+function fillGithubUser(token, profile){
+  var newUser = new User();
+
+  newUser.login       = profile.username;
+  newUser.githubID    = profile.id;
+  newUser.token       = token;
+  newUser.firstName   = profile.displayName.split(' ')[0];
+  newUser.name        = profile.displayName.split(' ')[1];
+  newUser.email       = profile._json.email;
   newUser.photo       = profile.photos[0].value;
   return newUser;
 }
