@@ -6,6 +6,8 @@ let OpenSubtitles = new OS({
     password: 'chatel86',
     ssl: false
 });
+let fs = require('fs');
+let download = require('download');
 ///////////////////////////////////////////////////////////////
 router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
   var room = req.params.id + encodeURI(Math.trunc(Math.random() * 10000000)),
@@ -35,6 +37,7 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
     });
 
     var lang = ['fre', 'eng'];
+    var path_cast = '/tmp/hypertube-files/'+body.data.movie.title_long + '/fr.srt';
     OpenSubtitles.search({
         sublanguageid: lang.join(),       // Can be an array.join, 'all', or be omitted.
         hash: hash,   // Size + 64bit checksum of the first and last 64k
@@ -53,7 +56,21 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
         // query: 'Charlie Chaplin',   // Text-based query, this is not recommended.
         // gzip: true                  // returns url to gzipped subtitles, defaults to false
     }).then(function(result){
-        console.log(result)
+        // console.log(result.fr.url)
+        console.log(body.title_long);
+        download(result.fr.url, '/tmp/hypertube-files/'+body.data.movie.title_long, {filename: "fr.srt"}).then(() => {
+          console.log('done!');
+        });
+
+        download(result.fr.url, {filename: "fr.srt"}).then(data => {
+          fs.writeFileSync('/tmp/hypertube-files/'+body.data.movie.title_long, data, 777);
+        });
+        // download(result.fr.url).pipe(fs.createWriteStream('/tmp/hypertube-files/'+body.data.movie.title_long));
+        Promise.all([
+          result.fr.url
+        ].map(x => download(x, '/tmp/hypertube-files/'+body.data.movie.title_long, {filename: "fr.srt"}))).then(() => {
+          console.log('files downloaded!');
+        });
       });
         engine.on('ready', ()=>{
         const max = engine.files.reduce((prev, current)=>{
@@ -67,12 +84,11 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
           }
           else {
             var stream  = file.createReadStream();
-            request('http://www.theimdbapi.org/api/movie?movie_id='+ body.data.movie.imdb_code, (err2, response2, content)=>{
-              content = JSON.parse(content);
-              // console.log(content)
-              res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body, stars: content.stars});
+            // request('http://www.theimdbapi.org/api/movie?movie_id='+ body.data.movie.imdb_code, (err2, response2, content)=>{
+              // content = JSON.parse(content);
+              res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body, path_cast: path_cast});
             setTimeout(function(){percent(engine, file, res, room)}, 2000);
-            });
+            // });
           }
       });
     });

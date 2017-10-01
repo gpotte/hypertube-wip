@@ -19,6 +19,7 @@
     "colors": "^1.1.2",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.3",
+    "download": "^6.2.5",
     "ejs": "^2.5.7",
     "express": "^4.15.4",
     "express-session": "^1.15.5",
