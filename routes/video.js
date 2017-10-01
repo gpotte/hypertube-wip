@@ -15,6 +15,14 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
   info  = request('https://yts.ag/api/v2/movie_details.json?movie_id='+req.params.id, function(err, response, body){
     body = JSON.parse(body);
     var hash = qual === "sd" ? body.data.movie.torrents[0].hash : body.data.movie.torrents[1].hash;
+/* JULIAN A CONTINUER...
+    body.data.movie.torrents.forEach(torrent) {
+	    if (qual === "sd") {
+			var hash = qual === "sd" ? body.data.movie.torrents[0].hash : body.data.movie.torrents[1].hash;
+    	}
+    }
+    */
+    
     magnet = 'magnet:?xt=urn:btih:'+ hash +'&dn='+ encodeURI(body.data.movie.title);
     var engine = torrentStream(magnet, {path: '/tmp/hypertube-files', trackers: ["udp://glotorrents.pw:6969/announce",
                                         "udp://tracker.opentrackr.org:1337/announce",
