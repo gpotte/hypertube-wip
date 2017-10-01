@@ -11,7 +11,7 @@ function getMovies(){
       // imdb.forEach((cast)=>{
       //  <div> casting: '+imdb.stars+'</div><br>\
       if (movie.torrents[1]){
-      $('.movie-list').append('<div class="row-eq-height col-xs-5 col-md-3 thumbnail">\
+      $('.movie-list').append('<div class="row-eq-height col-xs-5 col-md-4 thumbnail nopadding">\
                                   <img src="'+movie.large_cover_image+'">\
                                   <div class="caption">\
                                     <h3>'+movie.title+'</h3>\
@@ -22,7 +22,7 @@ function getMovies(){
                                   </div>\
                                 </div>')
       } else {
-        $('.movie-list').append('<div class="row-eq-height col-xs-5 col-md-3 thumbnail">\
+        $('.movie-list').append('<div class="row-eq-height col-xs-5 col-md-4 thumbnail nopadding">\
                                     <img src="'+movie.large_cover_image+'">\
                                     <div class="caption">\
                                       <h3>'+movie.title+'</h3>\
