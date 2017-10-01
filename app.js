@@ -42,6 +42,9 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 app.get('/', middleware.loggedIn(), (req, res)=>{
   res.render('index', {title: 'home', user: req.user});
 });
+app.get('/series', middleware.loggedIn(), (req, res)=>{
+  res.render('series', {title: 'home', user: req.user});
+});
 
 var loginRoute  = require(process.env.PWD + '/routes/login'),
     userRoute   = require(process.env.PWD + '/routes/user'),
