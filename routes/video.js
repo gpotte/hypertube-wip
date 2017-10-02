@@ -97,8 +97,8 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
             var stream  = file.createReadStream();
             // request('http://www.theimdbapi.org/api/movie?movie_id='+ body.data.movie.imdb_code, (err2, response2, content)=>{
               // content = JSON.parse(content);
-              res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body, /*path_cast: path_cast*/});
-			  setTimeout(function(){percent(engine, file, res, room)}, 2000);
+              res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body, path_cast: path_cast});
+			        setTimeout(function(){percent(engine, file, res, room)}, 2000);
             // });
           }
       });
