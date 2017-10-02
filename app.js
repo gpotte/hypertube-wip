@@ -1,4 +1,5 @@
 torrentStream   = require('hypertorrent-stream'),
+moment          = require('moment'),
 xss             = require('xss'),
 colors          = require('colors'),
 bcrypt          = require('bcrypt-nodejs'),
@@ -17,6 +18,7 @@ router          = express.Router(),
 fs              = require('fs'),
 request         = require('request'),
 User            = require(process.env.PWD + '/models/user'),
+Comment         = require(process.env.PWD + '/models/comments'),
 middleware      = require(process.env.PWD + "/functions/middleware.js");
 
 /////////////////SETUP ENV AND DB//////////////
@@ -46,13 +48,15 @@ app.get('/series', middleware.loggedIn(), (req, res)=>{
   res.render('series', {title: 'home', user: req.user});
 });
 
-var loginRoute  = require(process.env.PWD + '/routes/login'),
-    userRoute   = require(process.env.PWD + '/routes/user'),
-    playerRoute = require(process.env.PWD + '/routes/video');
+var loginRoute    = require(process.env.PWD + '/routes/login'),
+    userRoute     = require(process.env.PWD + '/routes/user'),
+    commentRoute  = require(process.env.PWD + '/routes/comment'),
+    playerRoute   = require(process.env.PWD + '/routes/video');
 
 app.use('/', loginRoute);
 app.use('/', userRoute);
 app.use('/', playerRoute);
+app.use('/', commentRoute);
 
 app.get('*', (req, res)=>{
   res.render('404', {title: '404'});

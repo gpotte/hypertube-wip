@@ -16,8 +16,16 @@
   <h5><%=info.data.movie.runtime%> min</h5>
   <h5><%=info.data.movie.rating%>/10</h5>
 </div>
+<div class="jumbotron">
+  <h3>Comment Section</h3>
+  <form id="commentForm">
+    <input type="text" name="comment" class="form-control" id="newComment" required>
+    <input type="submit" value="new comment" class="btn btn-default">
+  </form><br>
+  <div id="commentSection">
+  </div>
+</div>
 <script src="https://cdn.socket.io/socket.io-1.4.0.js"></script>
-<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script> var room = '<%=room%>',
              user =  '<%=user.login%>';
              imdb_code = '<%=info.data.movie.imdb_code%>';

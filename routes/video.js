@@ -97,7 +97,7 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
             var stream  = file.createReadStream();
             // request('http://www.theimdbapi.org/api/movie?movie_id='+ body.data.movie.imdb_code, (err2, response2, content)=>{
               // content = JSON.parse(content);
-              res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body, path_cast: path_cast});
+              res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body});
 			        setTimeout(function(){percent(engine, file, res, room)}, 2000);
             // });
           }
@@ -107,7 +107,7 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
 });
 
 
-router.get('/srt', (req, res)=>{
+router.get('/srt', middleware.loggedIn(), (req, res)=>{
 	let file = '/tmp/hypertube-files/' + decodeURI(req.query.path);
 	fs.readFile(file, 'utf8', function (err,data) {
 		if (err) {
@@ -118,9 +118,8 @@ router.get('/srt', (req, res)=>{
 	});
 });
 
-router.get('/video', (req, res)=>{
+router.get('/video', middleware.loggedIn(), (req, res)=>{
   let file = '/tmp/hypertube-files/' + decodeURI(req.query.path);
-  console.log(file);
   fs.stat(file, function(err, stats) {
   		if(err)
   				return res.sendStatus(404);
