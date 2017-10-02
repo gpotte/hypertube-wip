@@ -6,6 +6,5 @@ $(function() {
 
   socket.on('progress', (status)=>{
     console.log(status);
-    $('.progress-bar').css('width', status.value + '%').attr('aria-valuenow', status.value).html(status.value+'%');
   });
 });

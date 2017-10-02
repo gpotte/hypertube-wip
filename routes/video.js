@@ -14,20 +14,17 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
   qual  = req.params.qual,
   info  = request('https://yts.ag/api/v2/movie_details.json?movie_id='+req.params.id, function(err, response, body){
     body = JSON.parse(body);
-    
-    // LE PRECEDENT CODE FAISAIT DES BUGS ET RECUPERAIT PARFOIS DES FILMS EN 3D ! EN EFFET L'ORDRE 0/1 N'EST PAS TJRS POUR SD/HD SELON API
-    // RAPPEL DE L'ANCIEN CODE
-    // var hash = qual === "sd" ? body.data.movie.torrents[0].hash : body.data.movie.torrents[1].hash;
+
 	let hash = "";
     for (var i = 0, len = body.data.movie.torrents.length; i < len; i++) {
 	  if (qual === "sd" && (body.data.movie.torrents[i].quality == "720p" || body.data.movie.torrents[i].quality == "480p")) { //JE N'AI TROUVE AUCUN TORRENT 480p pour l'instant!
-			hash = body.data.movie.torrents[i].hash;		
-		} else if (qual === "hd" && body.data.movie.torrents[i].quality == "1080p") { 
-			hash = body.data.movie.torrents[i].hash; 
+			hash = body.data.movie.torrents[i].hash;
+		} else if (qual === "hd" && body.data.movie.torrents[i].quality == "1080p") {
+			hash = body.data.movie.torrents[i].hash;
     	}
-	} 
-    
-    
+	}
+
+
     magnet = 'magnet:?xt=urn:btih:'+ hash +'&dn='+ encodeURI(body.data.movie.title);
     var engine = torrentStream(magnet, {name: body.data.movie.slug, path: '/tmp/hypertube-files', trackers: ["udp://glotorrents.pw:6969/announce",
                                         "udp://tracker.opentrackr.org:1337/announce",
@@ -61,7 +58,7 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
         // season: '2',
         // episode: '3',
         langcode: 'fr',
-        extensions: 'vtt', // Accepted extensions, defaults to 'srt'.
+        extensions: ['srt', 'vtt'], // Accepted extensions, defaults to 'srt'.
         limit: 'best',                 // Can be 'best', 'all' or an
                                     // arbitrary nb. Defaults to 'best'
         imdbid: body.data.movie.imdb_code // 'tt528809' is fine too.
@@ -74,14 +71,14 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
           console.log('done!');
         });
 
-        download(result.fr.url, {filename: "fr.srt"}).then(data => {
+        download(result.fr.url, {filename: "fr.vtt"}).then(data => {
           fs.writeFileSync('/tmp/hypertube-files/'+ body.data.movie.slug, data, 777);
         });
-        // download(result.fr.url).pipe(fs.createWriteStream('/tmp/hypertube-files/'+body.data.movie.title_long));
+         //download(result.fr.url).pipe(fs.createWriteStream('/tmp/hypertube-files/'+body.data.movie.slug));
         Promise.all([
           result.fr.url
         ].map(x => download(x, '/tmp/hypertube-files/'+ body.data.movie.slug, {filename: "fr.vtt"}))).then(() => {
-          console.log('files downloaded!');
+          console.log('SOUS TITRE DOWNLOADED !!!!!!!!!!!!');
         });
       });
         engine.on('ready', ()=>{
@@ -123,22 +120,13 @@ router.get('/srt', (req, res)=>{
 
 router.get('/video', (req, res)=>{
   let file = '/tmp/hypertube-files/' + decodeURI(req.query.path);
+  console.log(file);
   fs.stat(file, function(err, stats) {
   		if(err)
-  		{
-  			if(err.code === 'ENOENT')
-        {
   				return res.sendStatus(404);
-  			}
-        return next(err)
-  		}
   		let range = req.headers.range;
   		if(!range)
-  		{
-  			let err = new Error('Wrong range');
-  				err.status = 416;
-  			return next(err);
-  		}
+        return res.sendStatus(416);
   		let positions = range.replace(/bytes=/, '').split('-');
   		let start = parseInt(positions[0], 10);
   		let file_size = stats.size;
@@ -165,7 +153,7 @@ router.get('/video', (req, res)=>{
   			stream.pipe(res);
   		})
   		stream.on('error', function(err) {
-  			return next(err);
+        return res.sendStatus(404);
   		});
   	});
 });

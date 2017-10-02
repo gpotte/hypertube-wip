@@ -9,12 +9,6 @@
 
 </div>
 
-<div class="progress">
-  <div class="progress-bar progress-bar-striped active" role="progressbar"
-   aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-   0%
-  </div>
-</div>
 <div class="jumbotron">
   <h2><%=title%> (<%=info.data.movie.year%>)</h2>
   <img src="<%=info.data.movie.medium_cover_image%>"></img>
@@ -27,14 +21,6 @@
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script> var room = '<%=room%>',
              user =  '<%=user.login%>';
-</script>
-<script type="text/javascript">
-  var subtitles = document.getElementById('subtitles');
-  console.log("JIFEWJGIOEWJGIOEWJIJEWIOGW")
-  for (var i = 0; i < video.textTracks.length; i++) {
-    console.log('1')
-     video.textTracks[i].mode = 'hidden';
-  }
 </script>
 <script src="/js/download.js"></script>
 <%include ../partials/footer%>
