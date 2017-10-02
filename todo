@@ -27,10 +27,10 @@ Login || Prenom || Nom || Email || Photo || Password || Language (default: engli
 
 ✓✓✓✓✓- player ✓✓✓✓✓ (a opti)
                   ------------------------------------------------------------------------
-- description ==>  Cast || Imdb (Rating and resume) || Year || Photo || number of seeds ||
+✓✓✓✓✓ - description ==>  Cast || Imdb (Rating and resume) || Year || Photo || number of seeds || ✓✓✓✓✓
                   ------------------------------------------------------------------------
                   -----------------------------------------
-- commentaires ==> FilmId || [Date / Commentaire / user] ||
+✓✓✓✓✓ - commentaires ==> FilmId || [Date / Commentaire / user] || ✓✓✓✓✓
                   -----------------------------------------
 - sauvegarder les films pendant un mois sur le serveur (ajoutez la date du dernier visionnage dans la db)
 - Dl Sub (anglais et langue prefere)
