@@ -19,7 +19,7 @@
   <h2><%=title%> (<%=info.data.movie.year%>)</h2>
   <img src="<%=info.data.movie.medium_cover_image%>"></img>
   <br/>
-  <h4><%=info.data.movie.description_intro%></h4>
+  <h4 id="description"><%=info.data.movie.description_intro%></h4>
   <h5><%=info.data.movie.runtime%> min</h5>
   <h5><%=info.data.movie.rating%>/10</h5>
 </div>
@@ -27,14 +27,8 @@
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script> var room = '<%=room%>',
              user =  '<%=user.login%>';
-</script>
-<script type="text/javascript">
-  var subtitles = document.getElementById('subtitles');
-  console.log("JIFEWJGIOEWJGIOEWJIJEWIOGW")
-  for (var i = 0; i < video.textTracks.length; i++) {
-    console.log('1')
-     video.textTracks[i].mode = 'hidden';
-  }
+             imdb_code = '<%=info.data.movie.imdb_code%>';
 </script>
 <script src="/js/download.js"></script>
+<script src="/js/cast.js"></script>
 <%include ../partials/footer%>
