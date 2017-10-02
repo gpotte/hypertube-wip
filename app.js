@@ -1,4 +1,4 @@
-torrentStream   = require('torrent-stream'),
+torrentStream   = require('hypertorrent-stream'),
 xss             = require('xss'),
 colors          = require('colors'),
 bcrypt          = require('bcrypt-nodejs'),
