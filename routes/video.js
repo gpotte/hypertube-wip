@@ -37,50 +37,50 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
     ]});
 
   //////////////////////////// SUBTITLES //////////////////////////////////////////////
-  OpenSubtitles.login()
-    .then(res => {
-        console.log(res.token);
-        console.log(res.userinfo);
-    })
-    .catch(err => {
-        console.log(err);
-    });
-
-    var lang = ['fre', 'eng'];
-    var path_cast = 'http://localhost:3030/srt?path='+ body.data.movie.slug + '/fr.vtt'; // Alex: le web browser essayait de load /tmp/film/fr.srt chose qu;il ne peut evidemment pas faire d'ou le new router.get SRT ||| De plus les .srt fonctionnent pas faut des .vtt
-    OpenSubtitles.search({
-        sublanguageid: lang.join(),       // Can be an array.join, 'all', or be omitted.
-        hash: hash,   // Size + 64bit checksum of the first and last 64k
-        // filesize: '129994823',      // Total size, in bytes.
-        // path: 'foo/bar.mp4',        // Complete path to the video file, it allows
-                                      //   to automatically calculate 'hash'.
-        // filename: 'bar.mp4',        // The video file name. Better if extension is included.
-        // season: '2',
-        // episode: '3',
-        langcode: 'fr',
-        extensions: ['srt', 'vtt'], // Accepted extensions, defaults to 'srt'.
-        limit: 'best',                 // Can be 'best', 'all' or an
-                                    // arbitrary nb. Defaults to 'best'
-        imdbid: body.data.movie.imdb_code // 'tt528809' is fine too.
-        // fps: '23.96',               // Number of frames per sec in the video.
-        // query: 'Charlie Chaplin',   // Text-based query, this is not recommended.
-        // gzip: true                  // returns url to gzipped subtitles, defaults to false
-    }).then(function(result){
-        console.log(result.fr.url);
-        download(result.fr.url, '/tmp/hypertube-files/'+ body.data.movie.slug, {filename: "fr.vtt"}).then(() => {
-          console.log('done!');
-        });
-
-        download(result.fr.url, {filename: "fr.vtt"}).then(data => {
-          fs.writeFileSync('/tmp/hypertube-files/'+ body.data.movie.slug, data, 777);
-        });
-         //download(result.fr.url).pipe(fs.createWriteStream('/tmp/hypertube-files/'+body.data.movie.slug));
-        Promise.all([
-          result.fr.url
-        ].map(x => download(x, '/tmp/hypertube-files/'+ body.data.movie.slug, {filename: "fr.vtt"}))).then(() => {
-          console.log('SOUS TITRE DOWNLOADED !!!!!!!!!!!!');
-        });
-      });
+  // OpenSubtitles.login()
+  //   .then(res => {
+  //       console.log(res.token);
+  //       console.log(res.userinfo);
+  //   })
+  //   .catch(err => {
+  //       console.log(err);
+  //   });
+  //
+  //   var lang = ['fre', 'eng'];
+  //   var path_cast = 'http://localhost:3030/srt?path='+ body.data.movie.slug + '/fr.vtt'; // Alex: le web browser essayait de load /tmp/film/fr.srt chose qu;il ne peut evidemment pas faire d'ou le new router.get SRT ||| De plus les .srt fonctionnent pas faut des .vtt
+  //   OpenSubtitles.search({
+  //       sublanguageid: lang.join(),       // Can be an array.join, 'all', or be omitted.
+  //       hash: hash,   // Size + 64bit checksum of the first and last 64k
+  //       // filesize: '129994823',      // Total size, in bytes.
+  //       // path: 'foo/bar.mp4',        // Complete path to the video file, it allows
+  //                                     //   to automatically calculate 'hash'.
+  //       // filename: 'bar.mp4',        // The video file name. Better if extension is included.
+  //       // season: '2',
+  //       // episode: '3',
+  //       langcode: 'fr',
+  //       extensions: ['srt', 'vtt'], // Accepted extensions, defaults to 'srt'.
+  //       limit: 'best',                 // Can be 'best', 'all' or an
+  //                                   // arbitrary nb. Defaults to 'best'
+  //       imdbid: body.data.movie.imdb_code // 'tt528809' is fine too.
+  //       // fps: '23.96',               // Number of frames per sec in the video.
+  //       // query: 'Charlie Chaplin',   // Text-based query, this is not recommended.
+  //       // gzip: true                  // returns url to gzipped subtitles, defaults to false
+  //   }).then(function(result){
+  //       console.log(result.fr.url);
+  //       download(result.fr.url, '/tmp/hypertube-files/'+ body.data.movie.slug, {filename: "fr.vtt"}).then(() => {
+  //         console.log('done!');
+  //       });
+  //
+  //       download(result.fr.url, {filename: "fr.vtt"}).then(data => {
+  //         fs.writeFileSync('/tmp/hypertube-files/'+ body.data.movie.slug, data, 777);
+  //       });
+  //        //download(result.fr.url).pipe(fs.createWriteStream('/tmp/hypertube-files/'+body.data.movie.slug));
+  //       Promise.all([
+  //         result.fr.url
+  //       ].map(x => download(x, '/tmp/hypertube-files/'+ body.data.movie.slug, {filename: "fr.vtt"}))).then(() => {
+  //         console.log('SOUS TITRE DOWNLOADED !!!!!!!!!!!!');
+  //       });
+  //     });
         engine.on('ready', ()=>{
         const max = engine.files.reduce((prev, current)=>{
           return (prev.length > current.length) ? prev : current;
@@ -97,7 +97,7 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
             var stream  = file.createReadStream();
             // request('http://www.theimdbapi.org/api/movie?movie_id='+ body.data.movie.imdb_code, (err2, response2, content)=>{
               // content = JSON.parse(content);
-              res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body, path_cast: path_cast});
+              res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body, /*path_cast: path_cast*/});
 			  setTimeout(function(){percent(engine, file, res, room)}, 2000);
             // });
           }
