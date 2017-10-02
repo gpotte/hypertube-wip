@@ -14,14 +14,19 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
   qual  = req.params.qual,
   info  = request('https://yts.ag/api/v2/movie_details.json?movie_id='+req.params.id, function(err, response, body){
     body = JSON.parse(body);
-    var hash = qual === "sd" ? body.data.movie.torrents[0].hash : body.data.movie.torrents[1].hash;
-/* JULIAN A CONTINUER...
-    body.data.movie.torrents.forEach(torrent) {
-	    if (qual === "sd") {
-			var hash = qual === "sd" ? body.data.movie.torrents[0].hash : body.data.movie.torrents[1].hash;
+    
+    // LE PRECEDENT CODE FAISAIT DES BUGS ET RECUPERAIT PARFOIS DES FILMS EN 3D ! EN EFFET L'ORDRE 0/1 N'EST PAS TJRS POUR SD/HD SELON API
+    // RAPPEL DE L'ANCIEN CODE
+    // var hash = qual === "sd" ? body.data.movie.torrents[0].hash : body.data.movie.torrents[1].hash;
+	let hash = "";
+    for (var i = 0, len = body.data.movie.torrents.length; i < len; i++) {
+	  if (qual === "sd" && (body.data.movie.torrents[i].quality == "720p" || body.data.movie.torrents[i].quality == "480p")) { //JE N'AI TROUVE AUCUN TORRENT 480p pour l'instant!
+			hash = body.data.movie.torrents[i].hash;		
+		} else if (qual === "hd" && body.data.movie.torrents[i].quality == "1080p") { 
+			hash = body.data.movie.torrents[i].hash; 
     	}
-    }
-    */
+	} 
+    
     
     magnet = 'magnet:?xt=urn:btih:'+ hash +'&dn='+ encodeURI(body.data.movie.title);
     var engine = torrentStream(magnet, {path: '/tmp/hypertube-files', trackers: ["udp://glotorrents.pw:6969/announce",
