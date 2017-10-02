@@ -23,6 +23,8 @@
     "ejs": "^2.5.7",
     "express": "^4.15.4",
     "express-session": "^1.15.5",
+    "hypertorrent-stream": "^1.0.4",
+    "moment": "^2.18.1",
     "mongod": "^2.0.0",
     "mongodb": "^2.2.31",
     "mongoose": "^4.11.11",
@@ -36,7 +38,6 @@
     "sendmail": "^1.2.0",
     "socket.io": "^2.0.3",
     "thepiratebay": "^1.4.5",
-    "hypertorrent-stream": "^1.0.4",
     "xss": "^0.3.4"
   }
 }
