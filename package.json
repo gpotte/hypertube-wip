@@ -8,11 +8,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gpotte@bitbucket.org/gpotte/hypertube.git"
+    "url": "git+vogsphere@vogsphere.42.fr:intra/2017/activities/hypertube/jubougno"
   },
   "author": "",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/gpotte/hypertube#readme",
+  "homepage": "https://projects.intra.42.fr/hypertube/jubougno",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.1",
@@ -36,7 +36,7 @@
     "sendmail": "^1.2.0",
     "socket.io": "^2.0.3",
     "thepiratebay": "^1.4.5",
-    "torrent-stream": "^1.0.3",
+    "hypertorrent-stream": "^1.0.4",
     "xss": "^0.3.4"
   }
 }

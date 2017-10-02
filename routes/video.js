@@ -29,7 +29,7 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
     
     
     magnet = 'magnet:?xt=urn:btih:'+ hash +'&dn='+ encodeURI(body.data.movie.title);
-    var engine = torrentStream(magnet, {path: '/tmp/hypertube-files', trackers: ["udp://glotorrents.pw:6969/announce",
+    var engine = torrentStream(magnet, {name: body.data.movie.slug, path: '/tmp/hypertube-files', trackers: ["udp://glotorrents.pw:6969/announce",
                                         "udp://tracker.opentrackr.org:1337/announce",
                                         "udp://torrent.gresille.org:80/announce",
                                         "udp://tracker.openbittorrent.com:80",
@@ -50,7 +50,7 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
     });
 
     var lang = ['fre', 'eng'];
-    var path_cast = '/tmp/hypertube-files/'+body.data.movie.title_long + '/fr.srt';
+    var path_cast = 'http://localhost:3030/srt?path='+ body.data.movie.slug + '/fr.vtt'; // Alex: le web browser essayait de load /tmp/film/fr.srt chose qu;il ne peut evidemment pas faire d'ou le new router.get SRT ||| De plus les .srt fonctionnent pas faut des .vtt
     OpenSubtitles.search({
         sublanguageid: lang.join(),       // Can be an array.join, 'all', or be omitted.
         hash: hash,   // Size + 64bit checksum of the first and last 64k
@@ -61,7 +61,7 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
         // season: '2',
         // episode: '3',
         langcode: 'fr',
-        extensions: ['srt', 'vtt'], // Accepted extensions, defaults to 'srt'.
+        extensions: 'vtt', // Accepted extensions, defaults to 'srt'.
         limit: 'best',                 // Can be 'best', 'all' or an
                                     // arbitrary nb. Defaults to 'best'
         imdbid: body.data.movie.imdb_code // 'tt528809' is fine too.
@@ -69,19 +69,18 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
         // query: 'Charlie Chaplin',   // Text-based query, this is not recommended.
         // gzip: true                  // returns url to gzipped subtitles, defaults to false
     }).then(function(result){
-        // console.log(result.fr.url)
-        console.log(body.title_long);
-        download(result.fr.url, '/tmp/hypertube-files/'+body.data.movie.title_long, {filename: "fr.srt"}).then(() => {
+        console.log(result.fr.url);
+        download(result.fr.url, '/tmp/hypertube-files/'+ body.data.movie.slug, {filename: "fr.vtt"}).then(() => {
           console.log('done!');
         });
 
         download(result.fr.url, {filename: "fr.srt"}).then(data => {
-          fs.writeFileSync('/tmp/hypertube-files/'+body.data.movie.title_long, data, 777);
+          fs.writeFileSync('/tmp/hypertube-files/'+ body.data.movie.slug, data, 777);
         });
         // download(result.fr.url).pipe(fs.createWriteStream('/tmp/hypertube-files/'+body.data.movie.title_long));
         Promise.all([
           result.fr.url
-        ].map(x => download(x, '/tmp/hypertube-files/'+body.data.movie.title_long, {filename: "fr.srt"}))).then(() => {
+        ].map(x => download(x, '/tmp/hypertube-files/'+ body.data.movie.slug, {filename: "fr.vtt"}))).then(() => {
           console.log('files downloaded!');
         });
       });
@@ -89,7 +88,9 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
         const max = engine.files.reduce((prev, current)=>{
           return (prev.length > current.length) ? prev : current;
         });
+	    engine.torrent.name = body.data.movie.slug; // Since we use a custom folder with HYPERtorrent-stream, we have to change it here otherwise it will load the old url.
         engine.files.forEach((file)=>{
+	      file.path = body.data.movie.slug + '/' + file.name; // Since we use a custom folder with HYPERtorrent-stream, we have to change it here otherwise it will load the old url.
           if (file !== max)
           {
             file.deselect();
@@ -100,7 +101,7 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
             // request('http://www.theimdbapi.org/api/movie?movie_id='+ body.data.movie.imdb_code, (err2, response2, content)=>{
               // content = JSON.parse(content);
               res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body, path_cast: path_cast});
-            setTimeout(function(){percent(engine, file, res, room)}, 2000);
+			  setTimeout(function(){percent(engine, file, res, room)}, 2000);
             // });
           }
       });
@@ -109,7 +110,16 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
 });
 
 
-
+router.get('/srt', (req, res)=>{
+	let file = '/tmp/hypertube-files/' + decodeURI(req.query.path);
+	fs.readFile(file, 'utf8', function (err,data) {
+		if (err) {
+			return console.log(err);
+		}
+		res.set('Content-Type', 'text/plain');
+		res.send(data);
+	});
+});
 
 router.get('/video', (req, res)=>{
   let file = '/tmp/hypertube-files/' + decodeURI(req.query.path);
