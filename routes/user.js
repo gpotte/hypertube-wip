@@ -25,7 +25,11 @@ router.post('/user/edit', middleware.loggedIn(), (req, res)=>{
     User.findOneAndUpdate({_id: user._id}, updateUser, (err, result)=>{
       if (result)
       {
-        req.user.login = updateUser.login;
+        req.user.login      = updateUser.login;
+        req.user.email      = updateUser.email;
+        req.user.name       = updateUser.name;
+        req.user.firstName  = updateUser.firstName;
+        req.user.language   = updateUser.language;
         req.flash('profileMessage', "your profile has been updated");
       }
       res.redirect('/user/'+ req.user.login);
