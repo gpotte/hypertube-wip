@@ -37,50 +37,58 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
     ]});
 
   //////////////////////////// SUBTITLES //////////////////////////////////////////////
-  // OpenSubtitles.login()
-  //   .then(res => {
-  //       console.log(res.token);
-  //       console.log(res.userinfo);
-  //   })
-  //   .catch(err => {
-  //       console.log(err);
-  //   });
-  //
-  //   var lang = ['fre', 'eng'];
-  //   var path_cast = 'http://localhost:3030/srt?path='+ body.data.movie.slug + '/fr.vtt'; // Alex: le web browser essayait de load /tmp/film/fr.srt chose qu;il ne peut evidemment pas faire d'ou le new router.get SRT ||| De plus les .srt fonctionnent pas faut des .vtt
-  //   OpenSubtitles.search({
-  //       sublanguageid: lang.join(),       // Can be an array.join, 'all', or be omitted.
-  //       hash: hash,   // Size + 64bit checksum of the first and last 64k
-  //       // filesize: '129994823',      // Total size, in bytes.
-  //       // path: 'foo/bar.mp4',        // Complete path to the video file, it allows
-  //                                     //   to automatically calculate 'hash'.
-  //       // filename: 'bar.mp4',        // The video file name. Better if extension is included.
-  //       // season: '2',
-  //       // episode: '3',
-  //       langcode: 'fr',
-  //       extensions: ['srt', 'vtt'], // Accepted extensions, defaults to 'srt'.
-  //       limit: 'best',                 // Can be 'best', 'all' or an
-  //                                   // arbitrary nb. Defaults to 'best'
-  //       imdbid: body.data.movie.imdb_code // 'tt528809' is fine too.
-  //       // fps: '23.96',               // Number of frames per sec in the video.
-  //       // query: 'Charlie Chaplin',   // Text-based query, this is not recommended.
-  //       // gzip: true                  // returns url to gzipped subtitles, defaults to false
-  //   }).then(function(result){
-  //       console.log(result.fr.url);
-  //       download(result.fr.url, '/tmp/hypertube-files/'+ body.data.movie.slug, {filename: "fr.vtt"}).then(() => {
-  //         console.log('done!');
-  //       });
-  //
-  //       download(result.fr.url, {filename: "fr.vtt"}).then(data => {
-  //         fs.writeFileSync('/tmp/hypertube-files/'+ body.data.movie.slug, data, 777);
-  //       });
-  //        //download(result.fr.url).pipe(fs.createWriteStream('/tmp/hypertube-files/'+body.data.movie.slug));
-  //       Promise.all([
-  //         result.fr.url
-  //       ].map(x => download(x, '/tmp/hypertube-files/'+ body.data.movie.slug, {filename: "fr.vtt"}))).then(() => {
-  //         console.log('SOUS TITRE DOWNLOADED !!!!!!!!!!!!');
-  //       });
-  //     });
+OpenSubtitles.login()
+    .then(res => {
+        // console.log(res.token);
+        // console.log(res.userinfo);
+    })
+    .catch(err => {
+        console.log(err);
+    });
+    var lang = ['fre', 'eng'];
+    var path_sub_fr = 'http://localhost:3030/srt?path='+ body.data.movie.slug+ '/fr.vtt'; 
+    var path_sub_en = 'http://localhost:3030/srt?path='+ body.data.movie.slug+ '/en.vtt';
+    OpenSubtitles.search({
+        sublanguageid: lang.join(),
+        hash: hash,
+        extensions: ['srt','vtt'],
+        limit: 'best',
+        imdbid: body.data.movie.imdb_code
+    }).then(function(result){
+        // console.log(result);
+        download(result.fr.url, '/tmp/hypertube-files/'+ body.data.movie.slug, {filename: "fr.srt"}).then(() => {
+          // console.log('fr subtitles done!');
+          download(result.en.url, '/tmp/hypertube-files/'+ body.data.movie.slug, {filename: "en.srt"}).then(() => {
+          // console.log('en subtitles done!');
+        });
+        });
+  
+        download(result.fr.url, {filename: "fr.srt"}).then(data => {
+          fs.writeFileSync('/tmp/hypertube-files/'+ body.data.movie.slug, data, 777);
+        });
+        download(result.en.url, {filename: "en.srt"}).then(data => {
+          fs.writeFileSync('/tmp/hypertube-files/'+ body.data.movie.slug, data, 777);
+        });
+         //download(result.fr.url).pipe(fs.createWriteStream('/tmp/hypertube-files/'+body.data.movie.slug));
+        Promise.all([
+          result.fr.url,
+        ].map(x => download(x, '/tmp/hypertube-files/'+ body.data.movie.slug, {filename: "fr.srt"}))).then(() => {
+              //conversion en vtt
+          // console.log('SOUS TITRE FR DOWNLOADED !!!!!!!!!!!!');
+        });
+        Promise.all([
+          result.en.url,
+        ].map(x => download(x, '/tmp/hypertube-files/'+ body.data.movie.slug, {filename: "en.srt"}))).then(() => {
+              //conversion en vtt
+                  fs.createReadStream('/tmp/hypertube-files/'+ body.data.movie.slug+ '/en.srt')
+                    .pipe(srt2vtt())
+                    .pipe(fs.createWriteStream('/tmp/hypertube-files/'+ body.data.movie.slug+ '/en.vtt'))
+                  fs.createReadStream('/tmp/hypertube-files/'+ body.data.movie.slug+ '/fr.srt')
+                    .pipe(srt2vtt())
+                    .pipe(fs.createWriteStream('/tmp/hypertube-files/'+ body.data.movie.slug+ '/fr.vtt'))
+          // console.log('SOUS TITRE EN DOWNLOADED !!!!!!!!!!!!');
+        });
+        });
         engine.on('ready', ()=>{
         const max = engine.files.reduce((prev, current)=>{
           return (prev.length > current.length) ? prev : current;
@@ -97,7 +105,7 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
             var stream  = file.createReadStream();
             // request('http://www.theimdbapi.org/api/movie?movie_id='+ body.data.movie.imdb_code, (err2, response2, content)=>{
               // content = JSON.parse(content);
-              res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body});
+              res.render('movie/download', {title: body.data.movie.title, room: room, user: req.user, path: encodeURI(file.path), info: body, path_sub_fr: path_sub_fr, path_sub_en: path_sub_en});
 			        setTimeout(function(){percent(engine, file, res, room)}, 2000);
             // });
           }
@@ -108,14 +116,8 @@ router.get('/movie/:id/:qual', middleware.loggedIn(), (req, res)=>{
 
 
 router.get('/srt', middleware.loggedIn(), (req, res)=>{
-	let file = '/tmp/hypertube-files/' + decodeURI(req.query.path);
-	fs.readFile(file, 'utf8', function (err,data) {
-		if (err) {
-			return console.log(err);
-		}
-		res.set('Content-Type', 'text/plain');
-		res.send(data);
-	});
+		res.set('Content-Type', 'text/vtt');
+		res.sendFile('/tmp/hypertube-files/' + decodeURI(req.query.path));
 });
 
 router.get('/video', middleware.loggedIn(), (req, res)=>{

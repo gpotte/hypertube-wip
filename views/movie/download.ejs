@@ -1,8 +1,14 @@
 <%include ../partials/header%>
 <link rel="stylesheet" type="text/css" href="/css/movie.css"/>
 <div class="embed-responsive embed-responsive-16by9">
-  <video id="video" src="http://localhost:3030/video?path=<%=path%>" class="embed-responsive-item" controls>
-   <!--<track label="English" kind="captions" srclang="en" src="captions/vtt/sintel-es.vtt">-->
+  <video  class="video" src="http://localhost:3030/video?path=<%=path%>" controls="controls">
+  <% if (user.language == "francais") { %>
+   <track label="English" kind="captions" srclang="en" src="<%=path_sub_en%>" >
+   <track label="French" kind="captions" srclang="fr" src="<%=path_sub_fr%>" default>
+  <% } else { %>
+   <track label="English" kind="captions" srclang="en" src="<%=path_sub_en%>" default>
+   <track label="French" kind="captions" srclang="fr" src="<%=path_sub_fr%>">
+  <% } %> 
   </video>
    <!-- <button id="subtitles" type="button" data-state="subtitles">CC</button> -->
 
