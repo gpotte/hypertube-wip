@@ -19,16 +19,16 @@ fs              = require('fs'),
 request         = require('request'),
 User            = require(process.env.PWD + '/models/user'),
 Comment         = require(process.env.PWD + '/models/comments'),
-middleware      = require(process.env.PWD + "/functions/middleware.js");
+middleware      = require(process.env.PWD + "/functions/middleware.js"),
 OS              = require('opensubtitles-api'),
 OpenSubtitles   = new OS({
     useragent:'OSTestUserAgentTemp',
     username: 'scredi',
     password: 'chatel86',
     ssl: false
-}),
-download        = require('download'),
-srt2vtt         = require('srt-to-vtt');
+ }),
+ download        = require('download'),
+ srt2vtt         = require('srt-to-vtt');
 
 /////////////////SETUP ENV AND DB//////////////
 if (!process.env.PWD) {

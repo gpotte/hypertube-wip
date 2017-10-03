@@ -46,7 +46,7 @@ OpenSubtitles.login()
         console.log(err);
     });
     var lang = ['fre', 'eng'];
-    var path_sub_fr = 'http://localhost:3030/srt?path='+ body.data.movie.slug+ '/fr.vtt'; 
+    var path_sub_fr = 'http://localhost:3030/srt?path='+ body.data.movie.slug+ '/fr.vtt';
     var path_sub_en = 'http://localhost:3030/srt?path='+ body.data.movie.slug+ '/en.vtt';
     OpenSubtitles.search({
         sublanguageid: lang.join(),
@@ -62,7 +62,7 @@ OpenSubtitles.login()
           // console.log('en subtitles done!');
         });
         });
-  
+
         download(result.fr.url, {filename: "fr.srt"}).then(data => {
           fs.writeFileSync('/tmp/hypertube-files/'+ body.data.movie.slug, data, 777);
         });
@@ -132,6 +132,7 @@ router.get('/video', middleware.loggedIn(), (req, res)=>{
   		let start = parseInt(positions[0], 10);
   		let file_size = stats.size;
   		let end = positions[1] ? parseInt(positions[1], 10) : file_size - 1;
+      end = end > (file_size - 1) ? file_size - 1 : end;
   		let chunksize = (end - start) + 1;
   		let head = {
   			'Content-Range': 'bytes ' + start + '-' + end + '/' + file_size,
