@@ -35,9 +35,10 @@
     "passport-github": "^1.1.0",
     "passport-local": "^1.0.0",
     "request": "^2.82.0",
+    "request-promise": "^4.2.2",
     "sendmail": "^1.2.0",
+    "slug": "^0.9.1",
     "socket.io": "^2.0.3",
-    "srt-to-vtt": "^1.1.1",
     "srt-to-vtt": "^1.1.1",
     "thepiratebay": "^1.4.5",
     "xss": "^0.3.4"
