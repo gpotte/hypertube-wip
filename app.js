@@ -61,11 +61,13 @@ var loginRoute    = require(process.env.PWD + '/routes/login'),
     userRoute     = require(process.env.PWD + '/routes/user'),
     commentRoute  = require(process.env.PWD + '/routes/comment'),
     playerRoute   = require(process.env.PWD + '/routes/video');
+    apiRoute   = require(process.env.PWD + '/routes/api');
 
 app.use('/', loginRoute);
 app.use('/', userRoute);
 app.use('/', playerRoute);
 app.use('/', commentRoute);
+app.use('/', apiRoute);
 
 app.get('*', (req, res)=>{
   res.render('404', {title: '404'});
