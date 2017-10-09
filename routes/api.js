@@ -1,7 +1,7 @@
-let request = require("request");
 let slug = require('slug');
 let rp = require('request-promise');
-	
+var request = require('request-promise-cache');
+
 function Torrent() {
 	this.quality = '';
 	this.url = '';
@@ -20,7 +20,7 @@ function IMDB() {
 	this.description = 'N/A';
 	this.resume = 'N/A';
 	this.writers = [];
-	this.image = [];
+	this.image = '';
 	this.release_date = 'N/A';
 	this.year = 0;
 	this.director = 'N/A';
@@ -51,9 +51,10 @@ function Serie(title) {
 }
 
 function imdb_fill(imdb_id, cb) {
-	rp({uri: 'https://theimdbapi.org/api/movie?movie_id=' + imdb_id, headers: {'User-Agent': 'Request-Promise'}, json: true })
-	    .then(function (imdb_info) {
+	request({url: 'https://theimdbapi.org/api/movie?movie_id=' + imdb_id, cacheKey: 'https://theimdbapi.org/api/movie?movie_id=' + imdb_id, cache: 60000 * 60 * 24 * 30 })
+	    .then(function (rqst) {
 			let iminfo = new IMDB();
+			imdb_info = JSON.parse(rqst.body)
 			iminfo.title = imdb_info.title;
 			iminfo.slug = slug(imdb_info.title);
 			iminfo.genre = imdb_info.genre; 
@@ -67,8 +68,7 @@ function imdb_fill(imdb_id, cb) {
 			iminfo.director = imdb_info.director;
 			iminfo.budget = imdb_info.budget;
 			iminfo.other_titles = imdb_info.metadata.also_known_as;
-			iminfo.cast = imdb_info.cast;
-			
+			iminfo.cast = imdb_info.cast;			
 			cb(iminfo);
 			
 		})
@@ -122,9 +122,9 @@ function series_fill(eztv_series, cb) {
 	var series = [];
 	
 	eztv_series.torrents.forEach(function(file, i) {
-		console.log("Passage")
-		console.log(i)
-		if (eztv_series.torrents[i].season != "0" && eztv_series.torrents[i].episode != "0" && eztv_series.torrents[i].season != null && eztv_series.torrents[i].episode != "0" && eztv_series.torrents[i].imdb_id != "") {
+		
+		
+			console.log("Passage", i, ' out of ', eztv_series.torrents.length - 1)
 			var serie = new Serie(eztv_series.torrents[i].title);
 			serie.season = parseInt(eztv_series.torrents[i].season);
 			serie.episode = parseInt(eztv_series.torrents[i].episode);
@@ -141,16 +141,18 @@ function series_fill(eztv_series, cb) {
 			torrent.size_bytes = parseInt(eztv_series.torrents[i].size_bytes);
 			
 			imdb_fill('tt' + eztv_series.torrents[i].imdb_id, function(iminfo) {
+				if (eztv_series.torrents[i].season != "0" && eztv_series.torrents[i].episode != "0" && eztv_series.torrents[i].season != null && eztv_series.torrents[i].episode != "0" && eztv_series.torrents[i].imdb_id != "") {
 				serie.torrent = torrent;
 				serie.imdb = iminfo;
 				series.push(serie);
+				}
 				
 				if (i == eztv_series.torrents.length - 1) {
 					cb(series);
 				}
 			});
 											
-		}
+		//}
 		
     });
 }

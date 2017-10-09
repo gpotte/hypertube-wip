@@ -36,6 +36,7 @@
     "passport-local": "^1.0.0",
     "request": "^2.82.0",
     "request-promise": "^4.2.2",
+    "request-promise-cache": "^1.0.6",
     "sendmail": "^1.2.0",
     "slug": "^0.9.1",
     "socket.io": "^2.0.3",
